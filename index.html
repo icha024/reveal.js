@@ -7,7 +7,7 @@
 		<title>reveal.js</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/league.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -20,30 +20,122 @@
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</script>
+
+		<style type="text/css" media="screen">
+			#menu {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				width: 300px;
+				z-index: 99999;
+				font-family: Arial, Helvetica, sans-serif
+			}
+			.button {
+				background-color: #4CAF50; /* Green */
+				border: none;
+				color: white;
+				padding: 10px 15px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 0.8em;
+			}
+			
+			#slides {
+				display: none;
+			}
+
+			#editor {
+				display: block;
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+			}
+		</style>
 	</head>
 	<body>
-		<div class="reveal">
+		<div id="menu">
+			<span class="button" onclick="showEditor()">Edit</span>
+			<span class="button" onclick="showSlides()">Present</span>
+		</div>
+
+		<div id="editor">## Markdown slides
+Click edit to begin
+---
+## Another slide
+Powered by Ace and Reveal.js</div>
+	
+		<div id="slides" class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-markdown data-separator="---">
+					<textarea data-template></textarea>
+				</section>
 			</div>
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.js"></script>
+		<script src="https://cdn.jsdelivr.net/ace/1.2.3/min/ace.js"></script>
+		<script src="https://cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript.js"></script>
+		<script src="https://cdn.jsdelivr.net/ace/1.2.3/min/ext-beautify.js"></script>
+		<script src="https://cdn.jsdelivr.net/ace/1.2.3/min/theme-monokai.js"></script>
 
 		<script>
+			// Ace Editor
+			var editor = ace.edit("editor");
+			editor.setTheme("ace/theme/monokai");
+			editor.session.setMode("ace/mode/markdown");
+			editor.session.setUseWrapMode(true);
+			editor.setFontSize(20);
+			editor.$blockScrolling = Infinity;
+
+			function showEditor() {
+				document.querySelector("#slides").style.display = "none";
+				document.querySelector("#editor").style.display = "block";
+			}
+
+			function showSlides() {
+				document.querySelector("#slides").style.display = "block";
+				document.querySelector("#editor").style.display = "none";
+				updateSlide();
+				Reveal.toggleOverview();
+				Reveal.toggleOverview();
+			}
+
+			function updateSlide() {
+				var contentData = editor.getValue();
+				console.log('contentData, ', contentData)
+				var slide = document.querySelector("section");
+				slide.setAttribute('data-markdown','');
+				slide.setAttribute('data-separator',"\\n---\\n");
+				slide.setAttribute('data-separator-notes',"^Note:");
+				slide.setAttribute('data-charset', "utf-8");
+				slide.innerHTML = "<textarea data-template>" +  contentData + "</textarea>";
+				RevealMarkdown.initialize();
+				console.log('slide updated')
+			}
+
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+				embedded: false,
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,	
 				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js'},
+					{ src: 'plugin/markdown/markdown.js'},
 					{ src: 'plugin/notes/notes.js', async: true },
 					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
 				]
 			});
+
+			showSlides();
 		</script>
 	</body>
 </html>
