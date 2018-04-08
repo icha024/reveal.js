@@ -104,6 +104,7 @@ Some content</div>
 			}
 
 			// Ace Editor
+			var needRefresh = true;
 			var editor = ace.edit("editor");
 			editor.setTheme("ace/theme/monokai");
 			editor.session.setMode("ace/mode/markdown");
@@ -112,9 +113,16 @@ Some content</div>
 			editor.$blockScrolling = Infinity;
 			editor.getSession().on('change', function() {
 				if (editor.curOp && editor.curOp.command.name) {
-					updateSlide();
+					needRefresh = true;
 				}
 			});
+
+			setInterval(function() {
+				if (needRefresh) {
+					needRefresh = false;
+					updateSlide();
+				}
+			}, 2000);
 
 			function showEditor() {
 				document.querySelector("#editor").style.display = "block";
