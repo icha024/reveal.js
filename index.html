@@ -49,6 +49,9 @@
 				bottom: 0;
 				left: 0;
 			}
+			.reveal {
+				font-size: 1.35em !important;
+			}
 		</style>
 	</head>
 	<body>
@@ -156,6 +159,9 @@ Some content</div>
 					Reveal.toggleOverview();
 					Reveal.sync();
 				}
+				document.querySelectorAll("pre > code").forEach(function(block) {
+					hljs.highlightBlock(block);
+				});
 			}
 
 			function save() {
